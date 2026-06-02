@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>编辑动态</h2>
+  <form method="post" class="form">
+    <label>内容
+      <textarea name="content" rows="5" required>{{ moment.content }}</textarea>
+    </label>
+    <button class="btn primary" type="submit">保存</button>
+  </form>
+</section>
+{% endblock %}

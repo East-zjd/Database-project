@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>动态详情</h2>
+  {% if moment %}
+    <div class="moment-detail">
+      <div>
+        <strong>{{ moment.username }}</strong>
+        <span class="muted">最后更新时间：{{ moment.last_update }}</span>
+      </div>
+      <p>{{ moment.content | replace('\n', '<br>') | safe }}</p>
+    </div>
+    {% if session.admin_id %}
+      <div class="actions">
+        <a class="btn ghost" href="{{ url_for('admin.admin_panel') }}">返回管理员面板</a>
+      </div>
+    {% endif %}
+    {% if session.user_id == moment.user_id %}
+      <div class="actions">
+        <a class="btn ghost" href="{{ url_for('moments.moment_edit', mid=moment.id) }}">编辑</a>
+        <form method="post" action="{{ url_for('moments.moment_delete', mid=moment.id) }}">
+          <button class="btn danger" type="submit">删除</button>
+        </form>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="empty">动态不存在或已删除。</div>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h3>评论</h3>
+  <ul class="comment-list">
+    {% for c in comments %}
+      <li>
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+          <div>
+            <strong>{{ c.username }}</strong>：{{ c.content }}
+          </div>
+          {% if session.admin_id or session.user_id == c.user_id or (session.user_id and session.user_id == moment.user_id) %}
+            <div class="actions" style="gap: 5px;">
+              {% if session.user_id == c.user_id %}
+                <button class="btn ghost" style="padding: 4px 8px; font-size: 12px;" onclick="toggleEdit({{ c.id }}, '{{ c.content | escape }}')">编辑</button>
+              {% endif %}
+              <form method="post" action="{{ url_for('moments.comment_delete', cid=c.id) }}" style="display: inline;">
+                <button class="btn danger" style="padding: 4px 8px; font-size: 12px;" type="submit">删除</button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+        {% if session.user_id == c.user_id %}
+          <div id="edit-form-{{ c.id }}" style="display: none; margin-top: 8px;">
+            <form method="post" action="{{ url_for('moments.comment_edit', cid=c.id) }}" class="form inline" style="gap: 8px;">
+              <input type="text" name="content" id="edit-content-{{ c.id }}" style="flex: 1; margin: 0;">
+              <button class="btn primary" type="submit" style="padding: 4px 8px;">保存</button>
+              <button class="btn ghost" type="button" onclick="toggleEdit({{ c.id }}, '')" style="padding: 4px 8px;">取消</button>
+            </form>
+          </div>
+        {% endif %}
+      </li>
+    {% else %}
+      <li class="muted">暂无评论</li>
+    {% endfor %}
+  </ul>
+  {% if session.user_id %}
+    <form method="post" class="form">
+      <label>发表评论
+        <input name="content" required>
+      </label>
+      <button class="btn primary" type="submit">提交</button>
+    </form>
+  {% elif not session.admin_id %}
+    <div class="hint">请先登录再评论。</div>
+  {% endif %}
+</section>
+
+<script>
+function toggleEdit(commentId, currentContent) {
+  const formDiv = document.getElementById('edit-form-' + commentId);
+  const contentInput = document.getElementById('edit-content-' + commentId);
+  if (formDiv.style.display === 'none') {
+    formDiv.style.display = 'block';
+    contentInput.value = currentContent;
+    contentInput.focus();
+  } else {
+    formDiv.style.display = 'none';
+  }
+}
+</script>
+{% endblock %}

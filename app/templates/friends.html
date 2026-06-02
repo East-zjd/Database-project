@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+  <div>
+    <h2>好友管理</h2>
+    <p class="muted">搜索用户、创建分组并管理好友。</p>
+  </div>
+</section>
+
+<section class="grid-2">
+  <div class="card">
+    <h3>创建分组</h3>
+    <form method="post" class="form">
+      <label>分组名称
+        <input name="group_name" required>
+      </label>
+      <button class="btn primary" name="action" value="create_group">创建</button>
+    </form>
+
+    <h3>当前分组</h3>
+    <ul class="tag-list">
+      {% for g in groups %}
+        <li>{{ g.name }}</li>
+      {% else %}
+        <li class="muted">尚未创建分组</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>搜索用户</h3>
+    <form method="post" class="form">
+      <label>用户名
+        <input name="username">
+      </label>
+      <button class="btn ghost" name="action" value="search">搜索</button>
+    </form>
+
+    {% if search_results %}
+      <ul class="search-results">
+        {% for s in search_results %}
+          <li>
+            <span>{{ s.username }} ({{ s.name or '未填写' }})</span>
+            <form method="post">
+              <input type="hidden" name="target_id" value="{{ s.id }}">
+              <button class="btn primary" name="action" value="add">申请好友</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</section>
+
+<section class="card">
+  <h3>好友申请</h3>
+  <ul class="search-results">
+    {% for r in incoming_requests %}
+      <li>
+        <span>{{ r.username }} ({{ r.name or '未填写' }})</span>
+        <form method="post">
+          <input type="hidden" name="request_id" value="{{ r.id }}">
+          <button class="btn primary" name="action" value="accept_request">同意</button>
+          <button class="btn ghost" name="action" value="reject_request">拒绝</button>
+        </form>
+      </li>
+    {% else %}
+      <li class="muted">暂无好友申请</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="card">
+  <h3>我的好友</h3>
+  <div class="friend-list">
+    {% for f in friends_list %}
+      <div class="friend-item">
+        <div>
+          <strong>{{ f.username }}</strong>
+          <span class="muted">分组：{{ f.group_name or '未分组' }}</span>
+        </div>
+        <div class="actions">
+          <form method="post" action="{{ url_for('friends.friend_assign', fid=f.uid) }}">
+            <select name="group_id">
+              <option value="">未分组</option>
+              {% for g in groups %}
+                <option value="{{ g.id }}" {% if f.group_id == g.id %}selected{% endif %}>{{ g.name }}</option>
+              {% endfor %}
+            </select>
+            <button class="btn ghost" type="submit">分配</button>
+          </form>
+          <form method="post" action="{{ url_for('friends.friend_remove', fid=f.uid) }}">
+            <button class="btn danger" type="submit">删除</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <div class="empty">暂时没有好友</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

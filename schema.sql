@@ -39,6 +39,18 @@ CREATE TABLE IF NOT EXISTS friends (
   FOREIGN KEY (group_id) REFERENCES friend_groups(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS friend_requests (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  requester_id INT NOT NULL,
+  target_id INT NOT NULL,
+  status ENUM('pending','accepted','rejected') DEFAULT 'pending',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY ux_friend_request (requester_id, target_id),
+  KEY idx_friend_request_target (target_id, status),
+  FOREIGN KEY (requester_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (target_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS moments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,

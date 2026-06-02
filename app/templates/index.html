@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <h1>简易社交平台</h1>
+    <p>发布动态、管理好友与分组，体验完整数据库应用流程。</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="{{ url_for('auth.register') }}">立即注册</a>
+      <a class="btn ghost" href="{{ url_for('moments.moments') }}">浏览动态</a>
+    </div>
+  </div>
+  <div class="hero-panel">
+    <h3>功能清单</h3>
+    <ul>
+      <li>用户注册/登录与资料修改</li>
+      <li>朋友圈发布、编辑、删除</li>
+      <li>好友搜索、分组与管理</li>
+      <li>管理员审核与用户注销</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

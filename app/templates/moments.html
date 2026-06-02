@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+  <div>
+    <h2>朋友圈动态</h2>
+    <p class="muted">展示自己与好友的动态，支持评论互动。</p>
+  </div>
+</section>
+
+{% if session.user_id %}
+<section class="card">
+  <h3>发布新动态</h3>
+  <form method="post" class="form">
+    <label>内容 (<=500 字)
+      <textarea name="content" rows="4" required></textarea>
+    </label>
+    <button class="btn primary" type="submit">发表</button>
+  </form>
+</section>
+
+<section class="list">
+  {% for r in rows %}
+    <article class="moment">
+      <header>
+        <div>
+          <strong>{{ r.username }}</strong>
+          <span class="muted">更新：{{ r.last_update }}</span>
+        </div>
+        {% if session.user_id == r.user_id %}
+          <div class="actions">
+            <a class="btn ghost" href="{{ url_for('moments.moment_edit', mid=r.id) }}">编辑</a>
+            <form method="post" action="{{ url_for('moments.moment_delete', mid=r.id) }}">
+              <button class="btn danger" type="submit">删除</button>
+            </form>
+          </div>
+        {% endif %}
+      </header>
+      <p>{{ r.content | replace('\n', '<br>') | safe }}</p>
+      <a class="link" href="{{ url_for('moments.moment_view', mid=r.id) }}">查看详情</a>
+    </article>
+  {% else %}
+    <div class="empty">暂无动态</div>
+  {% endfor %}
+</section>
+{% else %}
+<section class="card">
+  <div class="empty">请在登录后查看</div>
+</section>
+{% endif %}
+{% endblock %}

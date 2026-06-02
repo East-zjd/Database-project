@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+  <div>
+    <h2>管理员面板</h2>
+    <p class="muted">审核所有朋友圈动态，或注销用户。</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{{ url_for('admin.admin_profile') }}">个人信息</a>
+    <a class="btn ghost" href="{{ url_for('admin.admin_logout') }}">退出管理员</a>
+  </div>
+</section>
+
+<section class="card">
+  <h3>所有动态</h3>
+  <ul class="admin-moments">
+    {% for m in moments %}
+      <li>
+        <div>
+          <strong>{{ m.username }}</strong>
+          <span class="muted">{{ m.last_update }}</span>
+          <p>{{ m.content }}</p>
+          <a class="link" href="{{ url_for('moments.moment_view', mid=m.id) }}">查看详情</a>
+        </div>
+        <form method="post" action="{{ url_for('admin.admin_delete_moment', mid=m.id) }}">
+          <button class="btn danger" type="submit">删除</button>
+        </form>
+      </li>
+    {% else %}
+      <li class="muted">暂无动态</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="card">
+  <h3>注销用户</h3>
+  <ul class="admin-moments">
+    {% for u in users %}
+      <li>
+        <div>
+          <strong>{{ u.username }}</strong>
+          <span class="muted">ID: {{ u.id }}</span>
+          <p class="muted">{{ u.name or '未填写' }} · {{ u.created_at }}</p>
+        </div>
+      </li>
+    {% else %}
+      <li class="muted">暂无用户</li>
+    {% endfor %}
+  </ul>
+  <form method="post" class="form inline">
+    <label>用户ID
+      <input name="delete_user" required>
+    </label>
+    <button class="btn danger" type="submit">删除</button>
+  </form>
+  <p class="muted">注销会删除用户所有相关信息（好友关系、动态、评论）。</p>
+</section>
+{% endblock %}

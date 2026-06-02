@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>个人信息</h2>
+  <form method="post" class="form grid">
+    <label>用户ID
+      <input value="{{ user.id }}" disabled>
+    </label>
+    <label>用户名
+      <input value="{{ user.username }}" disabled>
+    </label>
+    <label>姓名
+      <input name="name" value="{{ user.name or '' }}">
+    </label>
+    <label>性别
+      <select name="gender">
+        <option value="O" {% if user.gender == 'O' %}selected{% endif %}>未知</option>
+        <option value="M" {% if user.gender == 'M' %}selected{% endif %}>男</option>
+        <option value="F" {% if user.gender == 'F' %}selected{% endif %}>女</option>
+      </select>
+    </label>
+    <label>出生日期
+      <input type="date" name="birth" value="{{ user.birthdate }}">
+    </label>
+    <label>年龄
+      <input name="age" value="{{ user.age or '' }}">
+    </label>
+    <label>新密码
+      <input type="password" name="password">
+    </label>
+    <label>确认新密码
+      <input type="password" name="confirm_password">
+    </label>
+    <button class="btn primary" type="submit">保存</button>
+  </form>
+</section>
+{% endblock %}
